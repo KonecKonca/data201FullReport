@@ -1,7 +1,31 @@
 	#Cassnadra questions
 	
-16. Allow filtering(unpredictable performance)
-https://www.datastax.com/dev/blog/allow-filtering-explained-2
+Allow filtering(unpredictable performance)
+	PRIMARY KEY ((title, added_year), video_id)
+	just title/year
+	
+We try to filter only by title it means that neccessary records can be
+in all partitions. That is way we receive message "allow filtering", case 
+performance of query can be unefficient. If we don't worry about unefficient
+performance we can add "ALLOW FILTERING" to the end of our query and it 
+will be performed.
 
-23. Look above
+	EXAMPLE:
+PRIMARY KEY((col1, col2), col5, col4))
 
+We can filter by next rule:
+	Necessary => all fields from PARTITION KEY
+			  => if we want to add column from CLUSTERED KEY,
+			  all other columns which are before it must be
+			  added to
+
+Valid:
+	col1 and col2
+	col1 and col2 and col5
+	col1 and col2 and col5 and col4
+Invalid:
+	col1 and col2 and col4
+	anything that does not contain both col1 and col2
+	
+Exception is situation when were created any secondary indexes.
+	

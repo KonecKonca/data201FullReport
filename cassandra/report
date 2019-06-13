@@ -1,0 +1,24 @@
+	# Cassandra report
+	
+	Cassandra was instaled and launced cqlsh. Keyspace killrvideo was created 
+with replication factor equval 1 and was switched how current keyspace.	Table videos
+was created with primary key video_id. In videos tables data was loaded fwom videos.csv
+with using COPY command. After that was performed some SELECT comands, which show 
+correctnes of previous actions. Tnan videos table was truncated. 
+	Second table videos_by_title_year was created with combining title and added_year
+as PARTITION KEY. Thand data for videos_by_title_year table was loaded with using COPY 
+command. After that was performed some SELECT comands, which show 
+correctnes of previous actions. Goal of that table is creation patotions with same
+title and year.
+	Third table videos_by_tag_year was created with COMBINING KEY which costists of
+PARTITION KEY(tag) and CLUSTERED KEY(added_year, video_id), it is neccessary for 
+creation partitions with same ags and fast searching by (added_year, video_id). 
+Thand data for videos_by_tag_year table was loaded with using COPY command. 
+After that was performed some SELECT comands, which show correctnes of previous 
+actions.
+	After that was created UDT video_encoding. And into table videos were added 
+ceil tags(SET<TEXT>) and encoding(video_encoding). Than videos atble was fullfil
+by data from videos.csv with tags and encoding and some selects were performed 
+for check compliance of performed actinos. 	
+	
+
