@@ -24,7 +24,7 @@ public class Twitt implements Serializable {
 //    private String in_reply_to_user_id;
 //    private String in_reply_to_user_id_str;
 //    private String in_reply_to_screen_name;
-//    private User user;
+    private User user;
 //    private String geo;
 //    private String coordinates;
 //    private String place;
@@ -46,6 +46,6 @@ public class Twitt implements Serializable {
 
     @Override
     public String toString(){
-        return created_at + " " + id + " " /*+ user.toString()*/;
+        return created_at + " " + id + " " /*+ user.toString()*/ + user ;
     }
 }
