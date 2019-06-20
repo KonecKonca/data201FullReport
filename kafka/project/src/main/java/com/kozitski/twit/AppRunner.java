@@ -16,21 +16,21 @@ public class AppRunner {
     public static void main(String[] args) throws TwitterException {
 
 
-//        Properties props = new Properties();
-//        props.put("metadata.broker.list", "sandbox-hdp.hortonworks.com:6667");
-//        props.put("bootstrap.servers", "sandbox-hdp.hortonworks.com:6667");
-//        props.put("acks", "all");
-//        props.put("delivery.timeout.ms", 30000);
-//        props.put("batch.size", 16384);
-//        props.put("buffer.memory", 33554432);
-//        props.put("serializer.class", "kafka.serializer.StringEncoder");
-//
-//        ProducerConfig producerConfig = new ProducerConfig(props);
-//        Producer<String, String> producer = new Producer<>(producerConfig);
-//
-//        KeyedMessage<String, String> message = null;
-//        message = new KeyedMessage<>(TOPIC_NAME, "any text");
-//        producer.send(message);
+        Properties props = new Properties();
+        props.put("metadata.broker.list", "sandbox-hdp.hortonworks.com:6667");
+        props.put("bootstrap.servers", "sandbox-hdp.hortonworks.com:6667");
+        props.put("acks", "all");
+        props.put("delivery.timeout.ms", 30000);
+        props.put("batch.size", 16384);
+        props.put("buffer.memory", 33554432);
+        props.put("serializer.class", "kafka.serializer.StringEncoder");
+
+        ProducerConfig producerConfig = new ProducerConfig(props);
+        Producer<String, String> producer = new Producer<>(producerConfig);
+
+        KeyedMessage<String, String> message = null;
+        message = new KeyedMessage<>(TOPIC_NAME, "any text");
+        producer.send(message);
 
         twittStreaming();
 
@@ -70,8 +70,8 @@ public class AppRunner {
         String keywords[] = {"big data", "machine learning", "ai"};
         filterQuery.track(keywords);
         double[][] location = {
-                {23.190837, 51.568748},
-                {30.482569, 56.113596}
+                {23.190837, 51.568748},  // WS-[long-lat]
+                {30.482569, 56.113596}   // NE-[long-lat]
         };
         filterQuery.locations(location);
 
