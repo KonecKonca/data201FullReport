@@ -15,11 +15,12 @@ public enum ArgType {
     ACCESS_TOKEN("at", "accessToken",true,"twitter access token"),
     ACCESS_SECRET_TOKEN("ast", "accessSecretToken",true,"twitter access secret token"),
 
-    KEY_WORDS,
-    LOCATION_WS_LONGTITUDE,
-    LOCATION_WS_LATITUDE,
-    LOCATION_NE_LONGTITUDE,
-    LOCATION_NE_LATITUDE;
+    KEY_WORDS("kw", "kewWords",true,"words through the comma like [big*data_ai_machine*learning] * - if space is necessary"),
+    WORK_TIMEOUT("wt", "workTimeout",true,"application working time [ms]"),
+    LOCATION_WS_LONGTITUDE("lwsl", "locationWSLongtitude",true,"West-Souht longtiude"),
+    LOCATION_WS_LATITUDE("lwslat", "locationWSLatitude",true,"West-Souht latitude"),
+    LOCATION_NE_LONGTITUDE("lnel", "locationNELongtitude",true,"North-East longtiude"),
+    LOCATION_NE_LATITUDE("lnelat", "locationNELatude",true,"North-East latitude");
 
     ArgType(String shortName, String fullName, boolean hasArgument, String description) {
         this.shortName = shortName;
@@ -35,5 +36,5 @@ public enum ArgType {
     @Getter
     private boolean hasArgument;
     @Getter
-    private String description
+    private String description;
 }
