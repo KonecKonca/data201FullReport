@@ -1,5 +1,7 @@
 package com.kozitski.spark
 
+import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.from_json
 
@@ -19,12 +21,35 @@ object Runner extends App {
     .load()
 
 
+  import org.apache.spark.sql.functions._
+  import spark.implicits._
 
-//  println("Start reading elements")
+//    df
+//      .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+//      .as[(String, String)]
 //
-//  df.collect().foreach(row => println(":::   " + row.get(1)))
+//  println("..... Start reading elements")
+
+//  df.collect().foreach(row => println(":::   " + row.toString()))
+
+  val messageRDD: RDD[Message] =
+    df.select(
+      col("key").cast("string"),
+      col("value").cast("string"),
+      col("offset").cast("long"),
+      col("timestamp").cast("long")
+    )
+      .as[Message]
+      .rdd
+
+  messageRDD.foreach(message =>  println(":::   " + message))
 
 }
+
+case class Message(key: String,
+                   value: String,
+                   offset: Long,
+                   timestamp: Long)
 
 
 
