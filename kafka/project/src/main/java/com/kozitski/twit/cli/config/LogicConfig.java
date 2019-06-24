@@ -3,12 +3,33 @@ package com.kozitski.twit.cli.config;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Logic config.
+ */
 public class LogicConfig {
+    /**
+     * The constant keyWords.
+     */
     public static List<String> keyWords = new ArrayList<>();
-    public static long workingTimeMS;
+    /**
+     * The constant workingTimeMS.
+     */
+    public static Long workingTimeMS;
 
-    public static double locationWSLongtitude;
-    public static double locationWSLatitude;
-    public static double locationNELongtitude;
-    public static double locationNELatitude;
+    /**
+     * The constant locationWSLongtitude.
+     */
+    public static Double locationWSLongtitude;
+    /**
+     * The constant locationWSLatitude.
+     */
+    public static Double locationWSLatitude;
+    /**
+     * The constant locationNELongtitude.
+     */
+    public static Double locationNELongtitude;
+    /**
+     * The constant locationNELatitude.
+     */
+    public static Double locationNELatitude;
 }
