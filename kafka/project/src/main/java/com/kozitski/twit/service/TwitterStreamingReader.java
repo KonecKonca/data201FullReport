@@ -1,5 +1,8 @@
 package com.kozitski.twit.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.kozitski.twit.cli.config.LogicConfig;
 import com.kozitski.twit.cli.config.TwitterConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -56,8 +59,18 @@ public class TwitterStreamingReader {
     public OnStatusStatusListener createListener(){
 
         return status -> {
-            log.info("... " + status.getId() + " was received");
-            kafkaWriter.writeToKafka(status.toString());
+
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String jsonTwit = mapper.writeValueAsString(status);
+
+                log.info("... " + status.getId() + " was received");
+                kafkaWriter.writeToKafka(jsonTwit);
+            }
+            catch (JsonProcessingException e) {
+                log.error("Can not convert to json", e);
+            }
+
         };
 
     }
