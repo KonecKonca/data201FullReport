@@ -6,7 +6,7 @@ import play.api.libs.json.Json
 
 class JsonMapper extends Serializable {
 
-   def mapToArray(rdd: RDD[KafkaMessage]): Array[Twit] = {
+   def mapToArray(rdd: RDD[KafkaMessage]): RDD[Twit] = {
 
     rdd.map(message =>  {
         val str = message.value
@@ -48,16 +48,13 @@ class JsonMapper extends Serializable {
         val urlentities = (jsonObject \ "urlentities").get.toString
         val favorited = (jsonObject \ "favorited").get.toString.toBoolean
 
-
         val twit = Twit(rateLimitStatus, accessLevel, createdAt, id, text, source, inReplyToStatusId, inReplyToUserId, favoriteCount, inReplyToScreenName,
           geoLocation, place, retweetCount, lang, retweetedStatus, userMentionEntities, hashtag, mediaEntities, extendedMediaEntities, symbolEntities,
           currentUserRetweetId, scopes, user, withheldInCountries, possiblySensitive, truncated, retweeted, contributors, retweet, urlentities,
           favorited)
 
-      println("    " + twit.hashtag + "  " + "hashtagEntities.{15}".r.findFirstIn(str).get)
-
       twit
-      }).collect()
+      })
   }
 
   private def mapHashTag(string: String): String= {
@@ -68,20 +65,6 @@ class JsonMapper extends Serializable {
     if(strings.size > 10){
       hashTag = strings(strings.size - 2)
     }
-
-//    val regLine = "text\": .*\"".r
-//    val hashLine = regLine.findFirstIn(string)
-//
-//    if(hashLine.nonEmpty){
-//      val hashWithCommRegExp = " .*".r
-//      val hashWithComma = hashWithCommRegExp.findFirstIn(hashLine.get)cl
-//
-//      if(hashWithComma.nonEmpty){
-//        val value = hashWithComma.get
-//        hashTag = value.substring(2, value.length - 1)
-//      }
-//
-//    }
 
     hashTag
   }

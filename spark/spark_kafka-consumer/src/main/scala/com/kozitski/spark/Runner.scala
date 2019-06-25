@@ -1,9 +1,9 @@
 package com.kozitski.spark
 
 import com.kozitski.spark.domain.{KafkaMessage, Twit}
-import com.kozitski.spark.service.JsonMapper
+import com.kozitski.spark.service.{HdfsSaver, JsonMapper, TwitsGrouper}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{SaveMode, SparkSession}
 
 object Runner extends App {
 
@@ -33,8 +33,19 @@ object Runner extends App {
       .as[KafkaMessage]
       .rdd
 
-  val twits: Array[Twit] = (new JsonMapper).mapToArray(twitRDD)
+  val twits: RDD[Twit] = (new JsonMapper).mapToArray(twitRDD)
 
+//  val groupedTwits: RDD[(String, List[Twit])] = (new TwitsGrouper).groupByHashTag(twits)
+//  groupedTwits.toDS().show()
+
+  val savedRdd: RDD[(String, String, Int)] = (new HdfsSaver).transformToSave(twits)
+  savedRdd
+    .toDS()
+    .write
+    .mode(SaveMode.Overwrite)
+    .partitionBy("_2", "_3")
+    .format("csv")
+    .text("/user/maria_dev/spark_advanced/4")  // /result.csv
 
 }
 
