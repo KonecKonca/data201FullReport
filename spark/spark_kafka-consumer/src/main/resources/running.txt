@@ -1,0 +1,15 @@
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.3.1  --class com.kozitski.spark.Runner com.kozitski.spark-1.0-SNAPSHOT-jar-with-dependencies.jar local kafkaTwitterReader /user/maria_dev/spark_advanced/14 2019 176 12 twitter_3 sandbox-hdp.hortonworks.com:6667
+
+
+spark-submit
+    --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.3.1
+    --class com.kozitski.spark.Runner
+com.kozitski.spark-1.0-SNAPSHOT-jar-with-dependencies.jar
+    local
+    kafkaTwitterReader
+    /user/maria_dev/spark_advanced/14
+    2019
+    176
+    12
+    twitter_3
+    sandbox-hdp.hortonworks.com:6667

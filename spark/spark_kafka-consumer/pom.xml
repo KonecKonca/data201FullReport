@@ -147,7 +147,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.kozitski.spark.Runner</mainClass>
+              <mainClass>com.kozitski.spark.AppRunner</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
