@@ -2,7 +2,6 @@ package com.kozitski.twit.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.kozitski.twit.cli.config.LogicConfig;
 import com.kozitski.twit.cli.config.TwitterConfig;
 import lombok.extern.slf4j.Slf4j;

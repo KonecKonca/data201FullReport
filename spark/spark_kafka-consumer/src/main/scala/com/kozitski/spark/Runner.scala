@@ -3,7 +3,7 @@ package com.kozitski.spark
 import com.kozitski.spark.domain.{KafkaMessage, Twit}
 import com.kozitski.spark.service.{HdfsSaver, JsonMapper, TwitsGrouper}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{SaveMode, SparkSession}
+import org.apache.spark.sql.{Row, SaveMode, SparkSession}
 
 object Runner extends App{
 
@@ -33,26 +33,47 @@ object Runner extends App{
       .as[KafkaMessage]
       .rdd
 
-  val twits: RDD[Twit] = (new JsonMapper).kafkaToArrayMap(twitRDD)
+  private val jsonMapper = new JsonMapper
+  val twits: RDD[Twit] = jsonMapper.kafkaToArrayMap(twitRDD)
 
   val grouper = new TwitsGrouper()
   val groupedTwits: RDD[(String, Int)] = grouper.groupByHashTag(twits)
   println(grouper.hashTagWithCountReport(groupedTwits))
 
-//  val savedRdd: RDD[(String, String, Int)] = (new HdfsSaver).transformToSave(twits)
-//  savedRdd
-//    .toDS()
-//    .write
-//    .mode(SaveMode.Overwrite)
-//    .partitionBy("_2", "_3")
-////    .format("json")
-//    .saveAsTable("/user/maria_dev/spark_advanced/6")
-////    .json("/user/maria_dev/spark_advanced/5")  // /result.csv
-//
-//  val value: String = spark.read.json("/user/maria_dev/spark_advanced/6").rdd.first().get(0).toString
-////  println("---------------------------------------------------")
-////  println(value.substring(0, 50))
-////  println("---------------------------------------------------")
+  private val hdfsSaver = new HdfsSaver
+  val savedRdd: RDD[(String, String, Int)] = hdfsSaver.transformToSave(twits)
+  savedRdd
+    .toDS()
+    .write
+    .mode(SaveMode.Overwrite)
+    .partitionBy("_2", "_3")
+    .format("csv")
+    .save("/user/maria_dev/spark_advanced/10")
+
+  val checkRdd: RDD[String] = spark
+    .read
+    .text("/user/maria_dev/spark_advanced/10")
+    .select(col("value").cast("String"))
+    .as[String]
+    .rdd
+  val extractedRdd: RDD[Twit] = hdfsSaver.extractFromHdfsToTwit(checkRdd)
+
+
+  spark.read
+    .format("kafka")
+    .option("kafka.bootstrap.servers", "sandbox-hdp.hortonworks.com:6667")
+    .option("subscribe", "twitter_3")
+    .option("startingOffsets", "latest")
+    .option("endingOffsets", "latest")
+    .load()
+    .rdd.foreach(println)
 
 }
 
+//val checkRdd: RDD[(String, String, Int)] = spark
+//.read
+//.text("/user/maria_dev/spark_advanced/8")
+//.select(col("value").cast("String"))
+//.as[(String, String, Int)]
+//.rdd
+//val resultRdd: RDD[Twit] = jsonMapper.toArrayMap(checkRdd.map(elem => elem._1))

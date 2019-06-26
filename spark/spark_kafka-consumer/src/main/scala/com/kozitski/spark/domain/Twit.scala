@@ -32,4 +32,39 @@ case class Twit(
                  retweet: Boolean,
                  urlentities: String,
                  favorited: Boolean
-               )
+               ){
+  override def toString: String = {
+    rateLimitStatus + ",, " +
+      accessLevel + ",, " +
+      createdAt + ",, " +
+      id + ",, " +
+      text + ",, " +
+      source + ",, " +
+      inReplyToStatusId + ",, " +
+      inReplyToUserId + ",, " +
+      favoriteCount + ",, " +
+      inReplyToScreenName + ",, " +
+      geoLocation + ",, " +
+      place + ",, " +
+      retweetCount + ",, " +
+      lang + ",, " +
+      retweetedStatus + ",, " +
+      userMentionEntities + ",, " +
+      hashtag + ",, " +
+      mediaEntities + ",, " +
+      extendedMediaEntities + ",, " +
+      symbolEntities + ",, " +
+      currentUserRetweetId + ",, " +
+      scopes + ",, " +
+      user + ",, " +
+      withheldInCountries + ",, " +
+      possiblySensitive + ",, " +
+      truncated + ",, " +
+      retweeted + ",, " +
+      contributors + ",, " +
+      retweet + ",, " +
+      urlentities + ",, " +
+      favorited
+  }
+
+}
