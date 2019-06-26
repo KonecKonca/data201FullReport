@@ -5,13 +5,24 @@ import org.apache.spark.rdd.RDD
 
 class TwitsGrouper extends Serializable {
 
-  // todo: Here must be count by hashTags
-  def groupByHashTag(rdd: RDD[Twit]): RDD[(String, List[Twit])] ={
+  def groupByHashTag(rdd: RDD[Twit]): RDD[(String, Int)] ={
 
     rdd
       .groupBy(twit => twit.hashtag)
-      .map(tuple => (tuple._1, tuple._2.toList))
+      .map(tuple => (tuple._1, tuple._2.size))
 
+  }
+
+  def hashTagWithCountReport(rdd: RDD[(String, Int)]): String = {
+    var result = "------------------------------------------\n"
+
+    rdd
+      .collect()
+      .foreach(elem => {result += "#" + elem._1 + ": " + elem._2 + "\n" })
+
+    result += "------------------------------------------\n"
+
+    result
   }
 
 }

@@ -6,7 +6,7 @@ import play.api.libs.json.Json
 
 class JsonMapper extends Serializable {
 
-   def mapToArray(rdd: RDD[KafkaMessage]): RDD[Twit] = {
+  def kafkaToArrayMap(rdd: RDD[KafkaMessage]): RDD[Twit] = {
 
     rdd.map(message =>  {
         val str = message.value

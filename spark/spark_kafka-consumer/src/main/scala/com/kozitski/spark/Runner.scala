@@ -5,7 +5,7 @@ import com.kozitski.spark.service.{HdfsSaver, JsonMapper, TwitsGrouper}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
-object Runner extends App {
+object Runner extends App{
 
   val spark = SparkSession.builder()
     .master("local")
@@ -33,19 +33,26 @@ object Runner extends App {
       .as[KafkaMessage]
       .rdd
 
-  val twits: RDD[Twit] = (new JsonMapper).mapToArray(twitRDD)
+  val twits: RDD[Twit] = (new JsonMapper).kafkaToArrayMap(twitRDD)
 
-//  val groupedTwits: RDD[(String, List[Twit])] = (new TwitsGrouper).groupByHashTag(twits)
-//  groupedTwits.toDS().show()
+  val grouper = new TwitsGrouper()
+  val groupedTwits: RDD[(String, Int)] = grouper.groupByHashTag(twits)
+  println(grouper.hashTagWithCountReport(groupedTwits))
 
-  val savedRdd: RDD[(String, String, Int)] = (new HdfsSaver).transformToSave(twits)
-  savedRdd
-    .toDS()
-    .write
-    .mode(SaveMode.Overwrite)
-    .partitionBy("_2", "_3")
-    .format("csv")
-    .text("/user/maria_dev/spark_advanced/4")  // /result.csv
+//  val savedRdd: RDD[(String, String, Int)] = (new HdfsSaver).transformToSave(twits)
+//  savedRdd
+//    .toDS()
+//    .write
+//    .mode(SaveMode.Overwrite)
+//    .partitionBy("_2", "_3")
+////    .format("json")
+//    .saveAsTable("/user/maria_dev/spark_advanced/6")
+////    .json("/user/maria_dev/spark_advanced/5")  // /result.csv
+//
+//  val value: String = spark.read.json("/user/maria_dev/spark_advanced/6").rdd.first().get(0).toString
+////  println("---------------------------------------------------")
+////  println(value.substring(0, 50))
+////  println("---------------------------------------------------")
 
 }
 
