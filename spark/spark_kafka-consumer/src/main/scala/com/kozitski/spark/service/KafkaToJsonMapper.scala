@@ -4,7 +4,7 @@ import com.kozitski.spark.domain.{KafkaMessage, Twit}
 import org.apache.spark.rdd.RDD
 import play.api.libs.json.Json
 
-class JsonMapper extends Serializable {
+class KafkaToJsonMapper extends Serializable {
 
   def kafkaToArrayMap(rdd: RDD[KafkaMessage]): RDD[Twit] = {
     toArrayMap(rdd.map(elem => elem.value))

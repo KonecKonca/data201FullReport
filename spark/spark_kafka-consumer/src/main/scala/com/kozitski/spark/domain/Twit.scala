@@ -33,6 +33,7 @@ case class Twit(
                  urlentities: String,
                  favorited: Boolean
                ){
+
   override def toString: String = {
     rateLimitStatus + ",, " +
       accessLevel + ",, " +
@@ -65,6 +66,20 @@ case class Twit(
       retweet + ",, " +
       urlentities + ",, " +
       favorited
+  }
+
+  override def hashCode(): Int = this.id.substring(13, this.id.length - 1).toInt
+
+  override def equals(obj: Any): Boolean = {
+    val twit = obj.asInstanceOf[Twit]
+
+    this.id.equals(twit.id)
+  }
+
+  override def canEqual(that: Any): Boolean = {
+    val twit = that.asInstanceOf[Twit]
+
+    this.id.equals(twit.id)
   }
 
 }
