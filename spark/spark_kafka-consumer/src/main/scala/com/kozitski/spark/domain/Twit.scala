@@ -34,6 +34,9 @@ case class Twit(
                  favorited: Boolean
                ){
 
+  /**
+    * @return [[String]] in separated format
+    */
   override def toString: String = {
     rateLimitStatus + ",, " +
       accessLevel + ",, " +
@@ -68,14 +71,23 @@ case class Twit(
       favorited
   }
 
+  /**
+    * @return [[Int]] defined by [[id]]
+    */
   override def hashCode(): Int = this.id.substring(13, this.id.length - 1).toInt
 
+  /**
+    * @return [[Boolean]] defined by is it equal by [[id]]
+    */
   override def equals(obj: Any): Boolean = {
     val twit = obj.asInstanceOf[Twit]
 
     this.id.equals(twit.id)
   }
 
+  /**
+    * @return [[Boolean]] defined by is it equal by [[id]]
+    */
   override def canEqual(that: Any): Boolean = {
     val twit = that.asInstanceOf[Twit]
 

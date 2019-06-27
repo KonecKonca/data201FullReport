@@ -5,8 +5,16 @@ import com.kozitski.spark.domain.KafkaMessage
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
+/**
+  * KafkaReader is responsible for reading twits from kafka
+  */
 class KafkaReader {
 
+  /**
+    * @param spark is [[SparkSession]]
+    * @param runningArguments is [[RunningArgument]]
+    * @return [[RDD]] of [[KafkaMessage]] which is red from kafka
+    */
   def readAllFromKafka(spark: SparkSession, runningArguments: RunningArgument): RDD[KafkaMessage] ={
 
     val df = spark.read

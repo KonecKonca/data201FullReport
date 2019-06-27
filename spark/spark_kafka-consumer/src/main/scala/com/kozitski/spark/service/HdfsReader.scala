@@ -4,12 +4,28 @@ import com.kozitski.spark.domain.Twit
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
+/**
+  * HdfsReader read data from hdfs
+  */
 class HdfsReader {
 
+  /**
+    * It is composite method which delegate to [[extractFromHdfsToTwit]]
+    * mapping of [[String]] [[RDD]]
+    *
+    * @param spark is [[SparkSession]]
+    * @param path is [[String]] output path
+    * @return [[RDD]] of [[Twit]]
+    */
   def readTwitsFromHdfs(spark: SparkSession, path: String): RDD[Twit]= {
     extractFromHdfsToTwit(readFromHdfs(spark, path))
   }
 
+  /**
+    * @param spark is [[SparkSession]]
+    * @param path is [[String]] output path
+    * @return [[RDD]] of [[Twit]]
+    */
   def readFromHdfs(spark: SparkSession, path: String): RDD[String]= {
 
     import org.apache.spark.sql.functions._
@@ -18,15 +34,20 @@ class HdfsReader {
     spark
       .read
       .text(path)
-      .select(col("value").cast("String"))
+      .select(col(HdfsReader.COLUMN_NAME).cast(HdfsReader.COLUMN_TYPE))
       .as[String]
       .rdd
 
   }
 
+  /**
+    *
+    * @param rdd is [[RDD]] of [[String]] which is mapped to [[Twit]] [[RDD]]
+    * @return is [[RDD]] of [[Twit]]
+    */
   def extractFromHdfsToTwit(rdd: RDD[String]): RDD[Twit]= {
     rdd.map(elem => {
-      val fileds = elem.split(",,")
+      val fileds = elem.split(HdfsReader.REGEXP_DELIMETR)
       Twit(fileds(0).trim().substring(1), fileds(1).trim().toLong,fileds(2).trim().toLong,fileds(3).trim(),
         fileds(4).trim(),fileds(5).trim(),fileds(6).trim().toLong,
         fileds(7).trim().toLong,fileds(8).trim().toLong,fileds(9).trim(),fileds(10).trim(),
@@ -37,4 +58,13 @@ class HdfsReader {
     })
   }
 
+}
+
+/**
+  * Common constants for [[HdfsReader]] class
+  */
+object HdfsReader{
+  val COLUMN_NAME: String = "value"
+  val COLUMN_TYPE: String = "String"
+  val REGEXP_DELIMETR: String = ",,"
 }

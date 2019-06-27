@@ -63,7 +63,7 @@ public class TwitterStreamingReader {
             try {
                 String jsonTwit = mapper.writeValueAsString(status);
 
-                log.info("... " + status.getId() + " was received");
+                log.info("... " + status.getId() + " " + status.getCreatedAt().toString() + " was received");
                 kafkaWriter.writeToKafka(jsonTwit);
             }
             catch (JsonProcessingException e) {

@@ -4,13 +4,28 @@ import com.kozitski.spark.domain.{KafkaMessage, Twit}
 import org.apache.spark.rdd.RDD
 import play.api.libs.json.Json
 
+/**
+  * KafkaToJsonMapper is responsible for mapping [[KafkaMessage]] to [[Twit]]
+  */
 class KafkaToJsonMapper extends Serializable {
 
-  def kafkaToArrayMap(rdd: RDD[KafkaMessage]): RDD[Twit] = {
-    toArrayMap(rdd.map(elem => elem.value))
+  /**
+    * Extract from [[KafkaMessage]] value
+    *
+    * @param rdd of [[KafkaMessage]]
+    * @return
+    */
+  def kafkaMessageMap(rdd: RDD[KafkaMessage]): RDD[Twit] = {
+    sringRddMap(rdd.map(elem => elem.value))
   }
 
-  def toArrayMap(rdd: RDD[String]): RDD[Twit] = {
+  /**
+    * Map json string to [[Twit]]
+    *
+    * @param rdd is [[RDD]] of [[String]]
+    * @return [[RDD]] of [[Twit]]
+    */
+  def sringRddMap(rdd: RDD[String]): RDD[Twit] = {
 
     rdd.map(str =>  {
 
@@ -61,7 +76,10 @@ class KafkaToJsonMapper extends Serializable {
 
   }
 
-
+  /**
+    * @param string is [[String]] hashTag in json format
+    * @return [[String]] hashTag is simple format
+    */
   private def mapHashTag(string: String): String= {
     var hashTag: String = ""
 
