@@ -14,5 +14,6 @@ sandbox-hdp.hortonworks.com:6667
 16384
 33554432
 false
-off1
-off2
+"""{"twitter_3":{"0":23}""""
+"""{"twitter_3":{"0":32}""""
+twitter_recalculated_1

@@ -2,7 +2,7 @@ package com.kozitski.streaming
 
 import com.kozitski.streaming.args.{ArgHandler, RunningArgument}
 import com.kozitski.streaming.domain.Twit
-import com.kozitski.streaming.service.{KafkaReader, KafkaToJsonMapper, KafkaWriter, TwitsStreamingGrouper}
+import com.kozitski.streaming.service.{KafkaStreamingReader, KafkaToJsonMapper, KafkaWriter, LoosedMessagesReviewer, TwitsStreamingGrouper}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.dstream.DStream
 
@@ -14,12 +14,26 @@ object AppRunner extends App{
     .appName(runningArgument.appName)
     .getOrCreate()
 
-  val kafkaReader = new KafkaReader
-  val kafkaDStream: DStream[(String, String)] = kafkaReader.readAllFromKafka(spark, runningArgument)
+  if(runningArgument.isCheckingLoosedMode){
+    val messagesReviewer = new LoosedMessagesReviewer
+    val updatedTwitts = messagesReviewer.reviewBatch(spark, runningArgument)
 
-  logicPerforming(kafkaDStream)
+    val updatedHashes = updatedTwitts.groupBy(twit => twit.hashtag)
+    updatedHashes.foreachPartition(partition => {
+      val kafkaWriter = new KafkaWriter
 
-  kafkaReader.start()
+      partition.foreach(hash => kafkaWriter.writeToKafkaTopic("#####", "#" + hash._1 + " :  " + hash._2))
+    })
+
+  }
+  else {
+    val kafkaReader = new KafkaStreamingReader
+    val kafkaDStream: DStream[(String, String)] = kafkaReader.readStreamFromKafka(spark, runningArgument)
+
+    logicPerforming(kafkaDStream)
+
+    kafkaReader.start()
+  }
 
   def logicPerforming(dsTream: DStream[(String, String)]): Unit= {
 
@@ -34,8 +48,8 @@ object AppRunner extends App{
         kafkaWriter.init(runningArgument)
 
         kafkaWriter.writeToKafkaTopic(runningArgument.kafkaWriteTopic, System.currentTimeMillis().toString)
-        partition.foreach(elem => {
-          kafkaWriter.writeToKafkaTopic(runningArgument.kafkaWriteTopic, "#" + elem._1 + " :  " + elem._2)
+        partition.foreach(hash => {
+          kafkaWriter.writeToKafkaTopic(runningArgument.kafkaWriteTopic, "#" + hash._1 + " :  " + hash._2)
         })
       }
       )

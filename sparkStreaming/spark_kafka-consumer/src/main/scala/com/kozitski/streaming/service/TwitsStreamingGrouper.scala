@@ -8,7 +8,6 @@ import org.apache.spark.streaming.dstream.DStream
 class TwitsStreamingGrouper extends Serializable {
 
   def groupTwitsByWindow(twitsStream: DStream[Twit], runningArguments: RunningArgument): DStream[(String, Long)]= {
-    // размер окна, шаг перемещения(охват)
     twitsStream
       .map(twit => twit.hashtag)
       .countByValueAndWindow(Seconds(runningArguments.windowDuration), Seconds(runningArguments.windowStep))

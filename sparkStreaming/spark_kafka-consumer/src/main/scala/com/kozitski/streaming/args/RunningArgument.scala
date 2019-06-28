@@ -13,6 +13,9 @@ case class RunningArgument(
                             kafkaBatchSize: Int,
                             kafkaBufferMemory: Int,
                             isCheckingLoosedMode: Boolean,
-                            kafkaReadingOffsets: String,
-                            kafkaWritingOffsets: String
+                            kafkaStartOffsets: String,
+                            kafkaEndOffsets: String,
+                            revisionStartTime: Long,
+                            revisionEndTime: Long,
+                            revisionKafkaTopic: String
                           )

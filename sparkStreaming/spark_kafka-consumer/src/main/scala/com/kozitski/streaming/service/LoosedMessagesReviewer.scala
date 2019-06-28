@@ -1,21 +1,46 @@
 package com.kozitski.streaming.service
 
-class LoosedMessagesReviewer extends Serializable {
+import com.kozitski.streaming.args.RunningArgument
+import com.kozitski.streaming.domain.{KafkaMessage, Twit}
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.SparkSession
 
-  private var previousWindow: Array[(String, Long)] = _
+class LoosedMessagesReviewer extends Serializable{
 
-  def reviewPreviousBatch(currentWindow: Array[(String, Long)]): Unit = {
+  def reviewBatch(spark: SparkSession, runningArgument: RunningArgument): RDD[Twit] = {
+    val offsetRdd = readBatchFromkafka(spark, runningArgument, runningArgument.kafkaStartOffsets, runningArgument.kafkaEndOffsets)
 
-    if(previousWindow != null){
+    val fullRdd = readBatchFromkafka(spark, runningArgument, "earliest", "latest")
+    val withTimeRdd = reduceByTime(fullRdd, runningArgument)
 
-
-    }
-
-    previousWindow = currentWindow
+    fullRdd.union(withTimeRdd).distinct()
   }
 
-//  def addMissingHashtags(previous: Array[(String, Long)], current: Array[(String, Long)]): Array[(String, Long)] ={
-//
-//  }
+  private def readBatchFromkafka(spark: SparkSession, runningArgument: RunningArgument, startOffset: String, endOffset: String): RDD[Twit]= {
+    val df = spark.read
+      .format("kafka")
+      .option("kafka.bootstrap.servers", runningArgument.hostName)
+      .option("subscribe", runningArgument.kafkaReadTopic)
+      .option("startingOffsets", startOffset)
+      .option("endingOffsets", endOffset)
+      .load()
+
+    import org.apache.spark.sql.functions._
+    import spark.implicits._
+
+    val kafkaMessageRdd = df.select(
+      col("key").cast("string"),
+      col("value").cast("string"),
+      col("offset").cast("long"),
+      col("timestamp").cast("long")
+    )
+      .as[KafkaMessage]
+      .rdd
+
+    (new KafkaToJsonMapper).kafkaMessageMap(kafkaMessageRdd)
+  }
+
+  def reduceByTime(rdd: RDD[Twit], runningArgument: RunningArgument): RDD[Twit]=
+    rdd.filter(twit => twit.createdAt < runningArgument.revisionStartTime || twit.createdAt > runningArgument.revisionEndTime)
 
 }

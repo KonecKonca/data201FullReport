@@ -36,6 +36,7 @@ class KafkaReader {
     )
       .as[KafkaMessage]
       .rdd
+
   }
 
 }

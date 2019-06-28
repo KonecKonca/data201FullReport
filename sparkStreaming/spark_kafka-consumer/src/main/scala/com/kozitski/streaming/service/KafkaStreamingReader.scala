@@ -7,10 +7,10 @@ import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
-class KafkaReader {
+class KafkaStreamingReader {
   var ssc: StreamingContext = _
 
-  def readAllFromKafka(spark: SparkSession, runningArguments: RunningArgument): DStream[(String, String)] ={
+  def readStreamFromKafka(spark: SparkSession, runningArguments: RunningArgument): DStream[(String, String)] ={
     ssc = new StreamingContext(spark.sparkContext, Seconds(runningArguments.windowDuration))
     ssc.checkpoint(runningArguments.checkpointLocation)
 
