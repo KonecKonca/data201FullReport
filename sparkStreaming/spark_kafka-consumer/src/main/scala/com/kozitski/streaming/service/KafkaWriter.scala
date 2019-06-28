@@ -3,8 +3,8 @@ package com.kozitski.streaming.service
 import java.util.Properties
 
 import com.kozitski.streaming.args.RunningArgument
-import org.apache.kafka.clients.producer.{ProducerRecord, KafkaProducer}
-import org.apache.kafka.common.serialization.{StringSerializer, StringDeserializer}
+import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
+import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 
 class KafkaWriter() extends Serializable {
   var producer: KafkaProducer[String, String]= _

@@ -8,15 +8,15 @@ import org.apache.spark.sql.SparkSession
 class LoosedMessagesReviewer extends Serializable{
 
   def reviewBatch(spark: SparkSession, runningArgument: RunningArgument): RDD[Twit] = {
-    val offsetRdd = readBatchFromkafka(spark, runningArgument, runningArgument.kafkaStartOffsets, runningArgument.kafkaEndOffsets)
+    val offsetRdd = readBatchFromKafka(spark, runningArgument, runningArgument.kafkaStartOffsets, runningArgument.kafkaEndOffsets)
 
-    val fullRdd = readBatchFromkafka(spark, runningArgument, "earliest", "latest")
+    val fullRdd = readBatchFromKafka(spark, runningArgument, "earliest", "latest")
     val withTimeRdd = reduceByTime(fullRdd, runningArgument)
 
-    fullRdd.union(withTimeRdd).distinct()
+    offsetRdd.union(withTimeRdd).distinct()
   }
 
-  private def readBatchFromkafka(spark: SparkSession, runningArgument: RunningArgument, startOffset: String, endOffset: String): RDD[Twit]= {
+  private def readBatchFromKafka(spark: SparkSession, runningArgument: RunningArgument, startOffset: String, endOffset: String): RDD[Twit]= {
     val df = spark.read
       .format("kafka")
       .option("kafka.bootstrap.servers", runningArgument.hostName)
@@ -41,6 +41,6 @@ class LoosedMessagesReviewer extends Serializable{
   }
 
   def reduceByTime(rdd: RDD[Twit], runningArgument: RunningArgument): RDD[Twit]=
-    rdd.filter(twit => twit.createdAt < runningArgument.revisionStartTime || twit.createdAt > runningArgument.revisionEndTime)
+    rdd.filter(twit => twit.createdAt > runningArgument.revisionStartTime && twit.createdAt < runningArgument.revisionEndTime)
 
 }

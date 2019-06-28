@@ -1,0 +1,1 @@
+local streamingTwitter twitter_3 twitter_analyse_1 sandbox-hdp.hortonworks.com:6667 /user/maria_dev/streaming_advanced_11/ 15 15 30000 16384 33554432 false off1 off2 1461628881000 1561628881005 anyTopic

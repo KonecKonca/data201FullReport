@@ -13,15 +13,4 @@ class TwitsStreamingGrouper extends Serializable {
       .countByValueAndWindow(Seconds(runningArguments.windowDuration), Seconds(runningArguments.windowStep))
   }
 
-  def generateReport(dsTream: DStream[(String, Long)]): String= {
-    var report = ""
-
-    dsTream.foreachRDD(rdd => rdd.collect().foreach(elem => {
-      println(report += "#" + elem._1 + " " + elem._2 + "\n")
-      report += "#" +  elem._1 + " " + elem._2 + "\n"
-    }))
-
-    report
-  }
-
 }
