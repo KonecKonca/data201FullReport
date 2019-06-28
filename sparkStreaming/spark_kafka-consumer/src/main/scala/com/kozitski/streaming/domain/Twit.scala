@@ -1,4 +1,4 @@
-package com.kozitski.spark.domain
+package com.kozitski.streaming.domain
 
 case class Twit(
                  rateLimitStatus: String,

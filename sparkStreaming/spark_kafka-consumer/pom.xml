@@ -162,7 +162,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.kozitski.spark.AppRunner</mainClass>
+              <mainClass>com.kozitski.streaming.AppRunner</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

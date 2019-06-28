@@ -1,6 +1,6 @@
-package com.kozitski.spark.service
+package com.kozitski.streaming.service
 
-import com.kozitski.spark.domain.{KafkaMessage, Twit}
+import com.kozitski.streaming.domain.{KafkaMessage, Twit}
 import org.apache.spark.rdd.RDD
 import play.api.libs.json.Json
 

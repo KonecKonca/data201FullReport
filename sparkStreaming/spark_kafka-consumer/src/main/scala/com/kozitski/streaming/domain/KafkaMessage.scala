@@ -1,4 +1,4 @@
-package com.kozitski.spark.domain
+package com.kozitski.streaming.domain
 
 /**
   *

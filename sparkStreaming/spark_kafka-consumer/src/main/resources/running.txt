@@ -1,15 +1,18 @@
-spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.3.1  --class com.kozitski.spark.Runner com.kozitski.spark-1.0-SNAPSHOT-jar-with-dependencies.jar local kafkaTwitterReader /user/maria_dev/spark_advanced/14 2019 176 12 twitter_3 sandbox-hdp.hortonworks.com:6667
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.3.1  --class com.kozitski.spark.AppRunner com.kozitski.spark-1.0-SNAPSHOT-jar-with-dependencies.jar local streamingTwitter twitter_3 twitter_analyse_1 sandbox-hdp.hortonworks.com:6667 /user/maria_dev/streaming_advanced_11/ 15 15 30000 16384 33554432 false off1 off2
 
+local streamingTwitter twitter_3 twitter_analyse_1 sandbox-hdp.hortonworks.com:6667 /user/maria_dev/streaming_advanced_11/ 15 15 30000 16384 33554432 false off1 off2
 
-spark-submit
-    --packages org.apache.spark:spark-sql-kafka-0-10_2.11:2.3.1
-    --class com.kozitski.spark.Runner
-com.kozitski.spark-1.0-SNAPSHOT-jar-with-dependencies.jar
-    local
-    kafkaTwitterReader
-    /user/maria_dev/spark_advanced/14
-    2019
-    176
-    12
-    twitter_3
-    sandbox-hdp.hortonworks.com:6667
+local
+streamingTwitter
+twitter_3
+twitter_analyse_1
+sandbox-hdp.hortonworks.com:6667
+/user/maria_dev/streaming_advanced_11/
+15
+15
+30000
+16384
+33554432
+false
+off1
+off2
