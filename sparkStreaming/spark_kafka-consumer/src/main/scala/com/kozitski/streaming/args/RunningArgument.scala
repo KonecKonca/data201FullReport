@@ -12,6 +12,7 @@ case class RunningArgument(
                             kafkaTimeout: Int,
                             kafkaBatchSize: Int,
                             kafkaBufferMemory: Int,
+                            waterMark: Int,
                             isCheckingLoosedMode: Boolean,
                             kafkaStartOffsets: String,
                             kafkaEndOffsets: String,
