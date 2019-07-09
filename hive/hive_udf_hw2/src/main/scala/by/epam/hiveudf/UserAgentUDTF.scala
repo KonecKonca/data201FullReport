@@ -8,6 +8,10 @@ import org.apache.hadoop.hive.serde2.objectinspector.{ObjectInspector, ObjectIns
 
 import scala.collection.JavaConversions.seqAsJavaList
 
+/*
+  UDTF for hive. Parse from UserAgent string
+  into 4 separate fields [city_id, client_os, client_browser, client_device]
+ */
 class UserAgentUDTF extends GenericUDTF{
 
   var intObjectInspector: PrimitiveObjectInspector = _
@@ -16,16 +20,19 @@ class UserAgentUDTF extends GenericUDTF{
   override def initialize(argOIs: StructObjectInspector): StructObjectInspector = {
     val inputFields = argOIs.getAllStructFieldRefs
 
+    // check correctness of input parameters
     if (inputFields.size() != 2) {
       throw new UDFArgumentException("UDF takes exactly two arguments!")
     }
 
+    // here must be UserAgent in String format
     val inputIdOI = inputFields.get(0).getFieldObjectInspector
     if (inputIdOI.getCategory != ObjectInspector.Category.PRIMITIVE
       && inputIdOI.asInstanceOf[PrimitiveObjectInspector].getPrimitiveCategory != PrimitiveObjectInspector.PrimitiveCategory.INT) {
       throw new UDFArgumentTypeException(0, "UDF takes INT as a first parameter!")
     }
 
+    // here must be city_id in Int format
     val inputUaOI = inputFields.get(1).getFieldObjectInspector
     if (inputUaOI.getCategory != ObjectInspector.Category.PRIMITIVE
       && inputUaOI.asInstanceOf[PrimitiveObjectInspector].getPrimitiveCategory != PrimitiveObjectInspector.PrimitiveCategory.STRING) {
@@ -61,7 +68,6 @@ class UserAgentUDTF extends GenericUDTF{
     )
 
     forward(result)
-
   }
 
   override def close(): Unit = {
@@ -70,6 +76,10 @@ class UserAgentUDTF extends GenericUDTF{
 
 }
 
+/*
+  Parse from string with using eu.bitwalker.useragentutils
+  client_os, client_browser, client_device and return them as Array[String]
+ */
 object UserAgentUDTF{
   def parseUserAgent(uaString: String): Array[String] = {
 
