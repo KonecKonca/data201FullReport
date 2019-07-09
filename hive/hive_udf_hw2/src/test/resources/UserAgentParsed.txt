@@ -1,0 +1,18 @@
+Computer
+Mac OS X
+Safari 9
+Mobile
+Android 2.x
+Mobile Safari
+Computer
+Windows 7
+Chrome 41
+Computer
+Windows 10
+Chrome
+Computer
+Windows 8
+Chrome 60
+Computer
+Windows 7
+Chrome
