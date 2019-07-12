@@ -1,0 +1,328 @@
+version: "3"
+
+services:
+
+  zk1:
+    image: zookeeper
+    restart: always
+    hostname: zk1
+    networks:
+      - hdfs-cluster
+    ports:
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=zk2:2888:3888 server.3=zk3:2888:3888
+
+  zk2:
+    image: zookeeper
+    restart: always
+    hostname: zk2
+    networks:
+      - hdfs-cluster
+    ports:
+      - 2182:2181
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zk1:2888:3888 server.2=0.0.0.0:2888:3888 server.3=zk3:2888:3888
+
+  zk3:
+    image: zookeeper
+    restart: always
+    hostname: zk3
+    networks:
+      - hdfs-cluster
+    ports:
+      - 2183:2181
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zk1:2888:3888 server.2=zk2:2888:3888 server.3=0.0.0.0:2888:3888
+
+  jn1:
+    build:
+      context: .
+      dockerfile: ./journalnode/Dockerfile
+      args:
+        - CLUSTER_NAME=docker-ha-cluster
+        - ACTIVE_NAME_NODE=nn1
+        - STANDBY_NAME_NODE=nn2
+        - JOURNAL_NODE_1=jn1
+        - JOURNAL_NODE_2=jn2
+        - JOURNAL_NODE_3=jn3
+        - ZK_NODE_1=zk1
+        - ZK_NODE_2=zk2
+        - ZK_NODE_3=zk3
+    hostname: jn1
+    container_name: jn1
+    networks:
+      - hdfs-cluster
+    ports:
+      - "8485:8485"
+      - "8480:8480"
+
+  jn2:
+    build:
+      context: .
+      dockerfile: ./journalnode/Dockerfile
+      args:
+        - CLUSTER_NAME=docker-ha-cluster
+        - ACTIVE_NAME_NODE=nn1
+        - STANDBY_NAME_NODE=nn2
+        - JOURNAL_NODE_1=jn1
+        - JOURNAL_NODE_2=jn2
+        - JOURNAL_NODE_3=jn3
+        - ZK_NODE_1=zk1
+        - ZK_NODE_2=zk2
+        - ZK_NODE_3=zk3
+    hostname: jn2
+    container_name: jn2
+    networks:
+      - hdfs-cluster
+    ports:
+      - "18485:8485"
+      - "18480:8480"
+
+  jn3:
+    build:
+      context: .
+      dockerfile: ./journalnode/Dockerfile
+      args:
+        - CLUSTER_NAME=docker-ha-cluster
+        - ACTIVE_NAME_NODE=nn1
+        - STANDBY_NAME_NODE=nn2
+        - JOURNAL_NODE_1=jn1
+        - JOURNAL_NODE_2=jn2
+        - JOURNAL_NODE_3=jn3
+        - ZK_NODE_1=zk1
+        - ZK_NODE_2=zk2
+        - ZK_NODE_3=zk3
+    hostname: jn3
+    container_name: jn3
+    networks:
+      - hdfs-cluster
+    ports:
+      - "28485:8485"
+      - "28480:8480"
+
+  nn1:
+    build:
+      context: .
+      dockerfile: ./namenode/Dockerfile
+      args:
+        - CLUSTER_NAME=docker-ha-cluster
+        - ACTIVE_NAME_NODE=nn1
+        - STANDBY_NAME_NODE=nn2
+        - JOURNAL_NODE_1=jn1
+        - JOURNAL_NODE_2=jn2
+        - JOURNAL_NODE_3=jn3
+        - ZK_NODE_1=zk1
+        - ZK_NODE_2=zk2
+        - ZK_NODE_3=zk3
+    hostname: nn1
+    container_name: nn1
+    networks:
+      - hdfs-cluster
+    ports:
+      - "9870:9870"
+      - "8020:8020"
+    depends_on:
+      - "zk1"
+      - "zk2"
+      - "zk3"
+      - "jn1"
+      - "jn2"
+      - "jn3"
+    links:
+      - "zk1"
+      - "zk2"
+      - "zk3"
+      - "jn1"
+      - "jn2"
+      - "jn3"
+    environment:
+      - CLUSTER_NAME=docker-ha-cluster
+      - JOURNAL_NODE_1=jn1
+      - JOURNAL_NODE_2=jn2
+      - JOURNAL_NODE_3=jn3
+      - IS_ACTIVE_NODE=1
+
+  nn2:
+    build:
+      context: .
+      dockerfile: ./namenode/Dockerfile
+      args:
+        - CLUSTER_NAME=docker-ha-cluster
+        - ACTIVE_NAME_NODE=nn1
+        - STANDBY_NAME_NODE=nn2
+        - JOURNAL_NODE_1=jn1
+        - JOURNAL_NODE_2=jn2
+        - JOURNAL_NODE_3=jn3
+        - ZK_NODE_1=zk1
+        - ZK_NODE_2=zk2
+        - ZK_NODE_3=zk3
+    hostname: nn2
+    container_name: nn2
+    networks:
+      - hdfs-cluster
+    ports:
+      - "19870:9870"
+      - "18020:8020"
+    depends_on:
+      - "zk1"
+      - "zk2"
+      - "zk3"
+      - "jn1"
+      - "jn2"
+      - "jn3"
+      - "nn1"
+    links:
+      - "zk1"
+      - "zk2"
+      - "zk3"
+      - "jn1"
+      - "jn2"
+      - "jn3"
+    environment:
+      - CLUSTER_NAME=docker-ha-cluster
+      - JOURNAL_NODE_1=jn1
+      - JOURNAL_NODE_2=jn2
+      - JOURNAL_NODE_3=jn3
+      - IS_STANDBY_NODE=1
+
+  dn1:
+    build:
+      context: .
+      dockerfile: ./datanode/Dockerfile
+      args:
+        - CLUSTER_NAME=docker-ha-cluster
+        - ACTIVE_NAME_NODE=nn1
+        - STANDBY_NAME_NODE=nn2
+        - JOURNAL_NODE_1=jn1
+        - JOURNAL_NODE_2=jn2
+        - JOURNAL_NODE_3=jn3
+        - ZK_NODE_1=zk1
+        - ZK_NODE_2=zk2
+        - ZK_NODE_3=zk3
+    hostname: dn1
+    container_name: dn1
+    networks:
+      - hdfs-cluster
+    depends_on:
+      - nn1
+      - nn2
+    links:
+      - nn1
+      - nn2
+    ports:
+      - "9864:9864"
+    environment:
+      - CLUSTER_NAME=docker-ha-cluster
+      - ACTIVE_NAME_NODE=nn1
+      - STANDBY_NAME_NODE=nn2
+
+  dn2:
+    build:
+      context: .
+      dockerfile: ./datanode/Dockerfile
+      args:
+        - CLUSTER_NAME=docker-ha-cluster
+        - ACTIVE_NAME_NODE=nn1
+        - STANDBY_NAME_NODE=nn2
+        - JOURNAL_NODE_1=jn1
+        - JOURNAL_NODE_2=jn2
+        - JOURNAL_NODE_3=jn3
+        - ZK_NODE_1=zk1
+        - ZK_NODE_2=zk2
+        - ZK_NODE_3=zk3
+    hostname: dn2
+    container_name: dn2
+    networks:
+      - hdfs-cluster
+    depends_on:
+      - nn1
+      - nn2
+    links:
+      - nn1
+      - nn2
+    ports:
+      - "19864:9864"
+    environment:
+      - CLUSTER_NAME=docker-ha-cluster
+      - ACTIVE_NAME_NODE=nn1
+      - STANDBY_NAME_NODE=nn2
+
+  dn3:
+    build:
+      context: .
+      dockerfile: ./datanode/Dockerfile
+      args:
+        - CLUSTER_NAME=docker-ha-cluster
+        - ACTIVE_NAME_NODE=nn1
+        - STANDBY_NAME_NODE=nn2
+        - JOURNAL_NODE_1=jn1
+        - JOURNAL_NODE_2=jn2
+        - JOURNAL_NODE_3=jn3
+        - ZK_NODE_1=zk1
+        - ZK_NODE_2=zk2
+        - ZK_NODE_3=zk3
+    hostname: dn3
+    container_name: dn3
+    networks:
+      - hdfs-cluster
+    depends_on:
+      - nn1
+      - nn2
+    links:
+      - nn1
+      - nn2
+    ports:
+      - "29864:9864"
+    environment:
+      - CLUSTER_NAME=docker-ha-cluster
+      - ACTIVE_NAME_NODE=nn1
+      - STANDBY_NAME_NODE=nn2
+#  resourcemanager:
+#    build: ./resourcemanager
+#    hostname: resourcemanager
+#    container_name: resourcemanager
+#    depends_on:
+#      - "namenode"
+#    links:
+#      - "namenode"
+#    ports:
+#      - "58088:8088"
+#    env_file:
+#      - ./hadoop.env
+#
+#  historyserver:
+#    build: ./historyserver
+#    hostname: historyserver
+#    container_name: historyserver
+#    volumes:
+#      - ./data/historyserver:/hadoop/yarn/timeline
+#    depends_on:
+#      - "namenode"
+#    links:
+#      - "namenode"
+#    ports:
+#      - "58188:8188"
+#    env_file:
+#      - ./hadoop.env
+#
+#  nodemanager1:
+#    build: ./nodemanager
+#    hostname: nodemanager1
+#    container_name: nodemanager1
+#    depends_on:
+#      - "namenode"
+#      - "resourcemanager"
+#    links:
+#      - "namenode"
+#      - "resourcemanager"
+#    ports:
+#      - "58042:8042"
+#    env_file:
+#      - ./hadoop.env
+
+networks:
+  hdfs-cluster:
